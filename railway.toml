@@ -1,0 +1,8 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "cd backend && mvn clean package -DskipTests && java -jar target/consultorio-backend-1.0.0.jar --spring.profiles.active=prod"
+
+[variables]
+NIXPACKS_JDK_VERSION = "17"

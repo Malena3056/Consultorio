@@ -47,6 +47,13 @@
             <scope>runtime</scope>
         </dependency>
         
+        <!-- Base de datos PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
         <!-- Para manejo de archivos (Commons IO) -->
         <dependency>
             <groupId>commons-io</groupId>
