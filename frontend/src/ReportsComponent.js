@@ -492,150 +492,9 @@ function ReportsComponent({ user }) {
     }
   };
 
-  const exportToCSV = () => {
-    const reportData = filteredData || reports;
-    if (!reportData) {
-      alert("No hay datos para exportar");
-      return;
-    }
 
-    let csvContent = "data:text/csv;charset=utf-8,";
 
-    if (user.role === "ADMIN") {
-      csvContent += "Métrica,Valor\n";
-      csvContent += `Total Citas,${reportData.totalCitas || 0}\n`;
-      csvContent += `Citas Completadas,${reportData.citasCompletadas || 0}\n`;
-      csvContent += `Citas Canceladas,${reportData.citasCanceladas || 0}\n`;
-      csvContent += `Citas Pendientes,${reportData.citasPendientes || 0}\n`;
-      csvContent += `Ingresos Totales,${reportData.ingresoTotal || 0}\n`;
-      csvContent += `Ingresos Pendientes,${
-        reportData.ingresosPendientes || 0
-      }\n`;
 
-      if (filteredData && filteredData.period) {
-        csvContent += `Período,${filteredData.period}\n`;
-      }
-    } else if (user.role === "PSICOLOGO") {
-      csvContent += "Métrica,Valor\n";
-      csvContent += `Total Citas,${reportData.totalCitas || 0}\n`;
-      csvContent += `Citas Completadas,${reportData.citasCompletadas || 0}\n`;
-      csvContent += `Citas Pendientes,${reportData.citasPendientes || 0}\n`;
-      csvContent += `Pacientes Únicos,${reportData.pacientesUnicos || 0}\n`;
-      csvContent += `Ingresos Totales,${reportData.ingresoTotal || 0}\n`;
-    } else {
-      csvContent += "Métrica,Valor\n";
-      csvContent += `Total Sesiones,${reportData.totalCitas || 0}\n`;
-      csvContent += `Sesiones Completadas,${
-        reportData.citasCompletadas || 0
-      }\n`;
-      csvContent += `Total Gastado,${reportData.totalGastado || 0}\n`;
-      csvContent += `Pendiente de Pago,${reportData.pendientePagar || 0}\n`;
-    }
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute(
-      "download",
-      `reporte_${user.role.toLowerCase()}_${timeFilter}_${
-        new Date().toISOString().split("T")[0]
-      }.csv`
-    );
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const exportToExcel = () => {
-    const reportData = filteredData || reports;
-    if (!reportData) {
-      alert("No hay datos para exportar");
-      return;
-    }
-
-    // Crear contenido Excel básico
-    let excelContent = `
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            table { border-collapse: collapse; width: 100%; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; font-weight: bold; }
-            .header { font-size: 18px; font-weight: bold; margin-bottom: 20px; }
-          </style>
-        </head>
-        <body>
-          <div class="header">Reporte ${
-            user.role
-          } - Centro Psicológico Bienestar</div>
-          <div>Fecha: ${new Date().toLocaleDateString()}</div>
-          ${filteredData ? `<div>Período: ${filteredData.period}</div>` : ""}
-          <br>
-          <table>
-            <tr>
-              <th>Métrica</th>
-              <th>Valor</th>
-            </tr>
-    `;
-
-    if (user.role === "ADMIN") {
-      excelContent += `
-        <tr><td>Total Citas</td><td>${reportData.totalCitas || 0}</td></tr>
-        <tr><td>Citas Completadas</td><td>${
-          reportData.citasCompletadas || 0
-        }</td></tr>
-        <tr><td>Citas Canceladas</td><td>${
-          reportData.citasCanceladas || 0
-        }</td></tr>
-        <tr><td>Ingresos Totales</td><td>S/ ${(
-          reportData.ingresoTotal || 0
-        ).toFixed(2)}</td></tr>
-      `;
-    } else if (user.role === "PSICOLOGO") {
-      excelContent += `
-        <tr><td>Total Citas</td><td>${reportData.totalCitas || 0}</td></tr>
-        <tr><td>Citas Completadas</td><td>${
-          reportData.citasCompletadas || 0
-        }</td></tr>
-        <tr><td>Pacientes Únicos</td><td>${
-          reportData.pacientesUnicos || 0
-        }</td></tr>
-        <tr><td>Ingresos Totales</td><td>S/ ${(
-          reportData.ingresoTotal || 0
-        ).toFixed(2)}</td></tr>
-      `;
-    } else {
-      excelContent += `
-        <tr><td>Total Sesiones</td><td>${reportData.totalCitas || 0}</td></tr>
-        <tr><td>Sesiones Completadas</td><td>${
-          reportData.citasCompletadas || 0
-        }</td></tr>
-        <tr><td>Total Gastado</td><td>S/ ${(
-          reportData.totalGastado || 0
-        ).toFixed(2)}</td></tr>
-        <tr><td>Pendiente de Pago</td><td>S/ ${(
-          reportData.pendientePagar || 0
-        ).toFixed(2)}</td></tr>
-      `;
-    }
-
-    excelContent += `
-          </table>
-        </body>
-      </html>
-    `;
-
-    const blob = new Blob([excelContent], { type: "application/vnd.ms-excel" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `reporte_${user.role.toLowerCase()}_${timeFilter}_${
-      new Date().toISOString().split("T")[0]
-    }.xls`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-  };
 
   const renderFilters = () => (
     <div className="card" style={{ marginBottom: "2rem" }}>
@@ -644,12 +503,6 @@ function ReportsComponent({ user }) {
         <div style={{ display: "flex", gap: "1rem" }}>
           <button className="btn btn-success" onClick={generatePrintableReport}>
             🖨️ Imprimir
-          </button>
-          <button className="btn btn-primary" onClick={exportToCSV}>
-            📊 CSV
-          </button>
-          <button className="btn btn-warning" onClick={exportToExcel}>
-            📈 Excel
           </button>
         </div>
       </div>
